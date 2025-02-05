@@ -7,33 +7,50 @@ export default class Gameboard {
   constructor() {
     this.#ships = [];
     this.#misses = new Set();
-
-    // (Ship name, [Ship object, Ship coordinates])
-    this.#ships.set("carrier", [new Ship(5), new Set()]);
-    this.#ships.set("battleship", [new Ship(4), new Set()]);
-    this.#ships.set("cruiser", [new Ship(3), new Set()]);
-    this.#ships.set("submarine", [new Ship(3), new Set()]);
-    this.#ships.set("destroyer", [new Ship(2), new Set()]);
   }
 
   placeShip(shipSize, x, y, isVertical) {
-    this.#ships.push([new Ship(shipSize), new Set()]);
-    const shipCoordinates = this.#ships[this.#ships.length - 1][1];
+    const shipCoordinates = new Set();
 
     if (isVertical) {
       for (let i = 0; i < shipSize; i++) {
-        shipCoordinates.add(`${x},${y + i}`);
+        if (x < 0 || y < 0 || x > 9 || y > 9)
+          throw new Error(`Coordinate (${x}, ${y}) is out of bounds`);
+
+        for (const ship of this.#ships) {
+          if (ship[1].has(`${x},${y}`))
+            throw new Error(`Coordinate (${x}, ${y}) is taken`);
+        }
+
+        shipCoordinates.add(`${x},${y}`);
+        y++;
       }
 
+      this.#ships.push([new Ship(shipSize), shipCoordinates]);
       return true;
     }
 
     for (let i = 0; i < shipSize; i++) {
-      shipCoordinates.add(`${x + i},${y}`);
+      if (x < 0 || y < 0 || x > 9 || y > 9)
+        throw new Error(`Coordinate (${x}, ${y}) is out of bounds`);
+
+      for (const ship of this.#ships) {
+        if (ship[1].has(`${x},${y}`))
+          throw new Error(`Coordinate (${x}, ${y}) is taken`);
+      }
+
+      shipCoordinates.add(`${x},${y}`);
+      x++;
     }
+
+    this.#ships.push([new Ship(shipSize), shipCoordinates]);
+    return true;
   }
 
   receiveAttack(x, y) {
+    if (x < 0 || y < 0 || x > 9 || y > 9)
+      throw new Error(`Coordinate (${x}, ${y}) is out of bounds`);
+
     for (const ship of this.#ships) {
       if (ship[1].has(`${x},${y}`)) {
         ship[0].hit();

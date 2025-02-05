@@ -1,98 +1,121 @@
-import Gameboard from "../gameboard.test.js";
+import Gameboard from "../game/gameboard.js";
 
 test("All Sunk", () => {
   const gameboard1 = new Gameboard();
 
-  gameboard1.placeShip("Carrier", [0, 0], "Column");
-  gameboard1.placeShip("Battleship", [4, 2], "Row");
-  gameboard1.placeShip("Cruiser", [9, 7], "Row");
-  gameboard1.placeShip("Submarine", [1, 6], "Column");
-  gameboard1.placeShip("Destroyer", [8, 8], "Row");
+  // (shipSize, x, y, isVertical)
+  gameboard1.placeShip(2, 8, 9, false);
+  gameboard1.placeShip(3, 3, 5, true);
+  gameboard1.placeShip(3, 5, 3, false);
+  gameboard1.placeShip(4, 0, 1, true);
+  gameboard1.placeShip(5, 0, 0, false);
 
   for (let i = 0; i < 5; i++) {
     if (i < 2) {
-      gameboard1.receiveAttack([8, 8 + i]);
+      expect(gameboard1.receiveAttack(8 + i, 9)).toBe(true);
     }
 
     if (i < 3) {
-      gameboard1.receiveAttack([1 + i, 6]);
+      expect(gameboard1.receiveAttack(3, 5 + i)).toBe(true);
     }
 
     if (i < 3) {
-      gameboard1.receiveAttack([9, 7 + i]);
+      expect(gameboard1.receiveAttack(5 + i, 3)).toBe(true);
     }
 
     if (i < 4) {
-      gameboard1.receiveAttack([4, 2 + i]);
+      expect(gameboard1.receiveAttack(0, 1 + i)).toBe(true);
     }
 
-    gameboard1.receiveAttack([0 + i, 0]);
+    expect(gameboard1.receiveAttack(0 + i, 0)).toBe(true);
   }
 
-  expect(isShipsSunk()).toBe(true);
+  expect(gameboard1.isAllSunk()).toBe(true);
 
   const gameboard2 = new Gameboard();
 
-  gameboard2.placeShip("Carrier", [2, 4], "Row");
-  gameboard2.placeShip("Battleship", [0, 9], "Column");
-  gameboard2.placeShip("Cruiser", [9, 1], "Row");
-  gameboard2.placeShip("Submarine", [8, 7], "Row");
-  gameboard2.placeShip("Destroyer", [5, 5], "Row");
+  // (shipSize, x, y, isVertical)
+  gameboard2.placeShip(2, 7, 5, false);
+  gameboard2.placeShip(3, 0, 7, true);
+  gameboard2.placeShip(3, 9, 0, true);
+  gameboard2.placeShip(4, 4, 4, true);
+  gameboard2.placeShip(5, 5, 4, true);
 
   for (let i = 0; i < 5; i++) {
     if (i < 2) {
-      gameboard2.receiveAttack([5, 5 + i]);
+      expect(gameboard2.receiveAttack(7 + i, 5)).toBe(true);
     }
 
     if (i < 3) {
-      gameboard2.receiveAttack([8, 7 + i]);
+      expect(gameboard2.receiveAttack(0, 7 + i)).toBe(true);
     }
 
     if (i < 3) {
-      gameboard2.receiveAttack([9, 1 + i]);
+      expect(gameboard2.receiveAttack(9, 0 + i)).toBe(true);
     }
 
     if (i < 4) {
-      gameboard2.receiveAttack([0 + i, 9]);
+      expect(gameboard2.receiveAttack(4, 4 + i)).toBe(true);
     }
 
-    gameboard2.receiveAttack([2, 4 + i]);
+    expect(gameboard2.receiveAttack(5, 4 + i)).toBe(true);
   }
 
-  expect(isShipsSunk()).toBe(true);
+  expect(gameboard2.isAllSunk()).toBe(true);
 });
 
-test("All Sunk", () => {
+test("Not All Sunk", () => {
   const gameboard1 = new Gameboard();
 
-  gameboard1.placeShip("Carrier", [0, 0], "Column");
-  gameboard1.placeShip("Battleship", [4, 2], "Row");
-  gameboard1.placeShip("Cruiser", [9, 7], "Row");
-  gameboard1.placeShip("Submarine", [1, 6], "Column");
-  gameboard1.placeShip("Destroyer", [8, 8], "Row");
+  // (shipSize, x, y, isVertical)
+  gameboard1.placeShip(2, 8, 9, false);
+  gameboard1.placeShip(3, 3, 5, true);
+  gameboard1.placeShip(3, 5, 3, false);
+  gameboard1.placeShip(4, 0, 1, true);
+  gameboard1.placeShip(5, 0, 0, false);
 
   for (let i = 0; i < 2; i++) {
-    gameboard1.receiveAttack([8, 8 + i]);
-    gameboard1.receiveAttack([1 + i, 6]);
-    gameboard1.receiveAttack([9, 7 + i]);
-    gameboard1.receiveAttack([4, 2 + i]);
-    gameboard1.receiveAttack([0 + i, 0]);
+    expect(gameboard1.receiveAttack(8 + i, 9)).toBe(true);
+    expect(gameboard1.receiveAttack(3, 5 + i)).toBe(true);
+    expect(gameboard1.receiveAttack(5 + i, 3)).toBe(true);
+    expect(gameboard1.receiveAttack(0, 1 + i)).toBe(true);
+    expect(gameboard1.receiveAttack(0 + i, 0)).toBe(true);
   }
 
-  expect(isShipsSunk()).toBe(false);
+  expect(gameboard1.isAllSunk()).toBe(false);
 
   const gameboard2 = new Gameboard();
 
-  gameboard2.placeShip("Carrier", [2, 4], "Row");
-  gameboard2.placeShip("Battleship", [0, 9], "Column");
-  gameboard2.placeShip("Cruiser", [9, 1], "Row");
-  gameboard2.placeShip("Submarine", [8, 7], "Row");
-  gameboard2.placeShip("Destroyer", [5, 5], "Row");
+  // (shipSize, x, y, isVertical)
+  gameboard2.placeShip(2, 7, 5, false);
+  gameboard2.placeShip(3, 0, 7, true);
+  gameboard2.placeShip(3, 9, 0, true);
+  gameboard2.placeShip(4, 4, 4, true);
+  gameboard2.placeShip(5, 5, 4, true);
 
-  for (let i = 0; i < 5; i++) {
-    gameboard2.receiveAttack([0, 0 + i]);
-    gameboard2.receiveAttack([2, 4 + i]);
-  }
+  expect(gameboard2.receiveAttack(0, 0)).toBe(false);
+  expect(gameboard2.receiveAttack(2, 3)).toBe(false);
 
-  expect(isShipsSunk()).toBe(false);
+  expect(gameboard2.isAllSunk()).toBe(false);
+});
+
+test("Bad Coordinates", () => {
+  const gameboard1 = new Gameboard();
+
+  gameboard1.placeShip(5, 0, 0, true);
+  expect(() => gameboard1.placeShip(4, 0, 0, true)).toThrow(
+    "Coordinate (0, 0) is taken"
+  );
+
+  expect(() => gameboard1.placeShip(2, 0, 3, false)).toThrow(
+    "Coordinate (0, 3) is taken"
+  );
+
+  expect(() => gameboard1.placeShip(3, 8, 4, false)).toThrow(
+    "Coordinate (10, 4) is out of bounds"
+  );
+
+  expect(() => gameboard1.placeShip(3, -1, 1, true)).toThrow(
+    "Coordinate (-1, 1) is out of bounds"
+  );
 });
