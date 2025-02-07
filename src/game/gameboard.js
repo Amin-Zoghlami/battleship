@@ -2,10 +2,12 @@ import Ship from "./ship";
 
 export default class Gameboard {
   #ships;
+  #hits;
   #misses;
 
   constructor() {
     this.#ships = [];
+    this.#hits = new Set();
     this.#misses = new Set();
   }
 
@@ -54,6 +56,7 @@ export default class Gameboard {
     for (const ship of this.#ships) {
       if (ship[1].has(`${x},${y}`)) {
         ship[0].hit();
+        this.#hits.add(`${x},${y}`);
         return true;
       }
     }
@@ -68,5 +71,17 @@ export default class Gameboard {
     }
 
     return true;
+  }
+
+  getShips() {
+    return [...this.#ships];
+  }
+
+  getHits() {
+    return new Set(this.#hits);
+  }
+
+  getMisses() {
+    return new Set(this.#misses);
   }
 }

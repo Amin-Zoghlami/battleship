@@ -30,6 +30,10 @@ test("All Sunk", () => {
     expect(gameboard1.receiveAttack(0 + i, 0)).toBe(true);
   }
 
+  expect(gameboard1.getHits().size).toBe(17);
+  expect(gameboard1.getHits().has("0,1")).toBe(true);
+  expect(gameboard1.getHits().has("4,7")).toBe(false);
+  expect(gameboard1.getMisses().size).toBe(0);
   expect(gameboard1.isAllSunk()).toBe(true);
 
   const gameboard2 = new Gameboard();
@@ -61,6 +65,10 @@ test("All Sunk", () => {
     expect(gameboard2.receiveAttack(5, 4 + i)).toBe(true);
   }
 
+  expect(gameboard2.getHits().size).toBe(17);
+  expect(gameboard2.getHits().has("0,1")).toBe(false);
+  expect(gameboard2.getHits().has("4,7")).toBe(true);
+  expect(gameboard2.getMisses().size).toBe(0);
   expect(gameboard2.isAllSunk()).toBe(true);
 });
 
@@ -82,6 +90,10 @@ test("Not All Sunk", () => {
     expect(gameboard1.receiveAttack(0 + i, 0)).toBe(true);
   }
 
+  expect(gameboard1.getHits().size).toBe(10);
+  expect(gameboard1.getHits().has("0,1")).toBe(true);
+  expect(gameboard1.getHits().has("0,3")).toBe(false);
+  expect(gameboard1.getMisses().size).toBe(0);
   expect(gameboard1.isAllSunk()).toBe(false);
 
   const gameboard2 = new Gameboard();
@@ -96,6 +108,10 @@ test("Not All Sunk", () => {
   expect(gameboard2.receiveAttack(0, 0)).toBe(false);
   expect(gameboard2.receiveAttack(2, 3)).toBe(false);
 
+  expect(gameboard2.getHits().size).toBe(0);
+  expect(gameboard2.getMisses().size).toBe(2);
+  expect(gameboard2.getMisses().has("2,3")).toBe(true);
+  expect(gameboard2.getMisses().has("9,9")).toBe(false);
   expect(gameboard2.isAllSunk()).toBe(false);
 });
 
@@ -117,5 +133,17 @@ test("Bad Coordinates", () => {
 
   expect(() => gameboard1.placeShip(3, -1, 1, true)).toThrow(
     "Coordinate (-1, 1) is out of bounds"
+  );
+
+  expect(() =>
+    gameboard1
+      .receiveAttack(-1, 0)
+      .toThrow("Coordinate (-1, 0) is out of bounds")
+  );
+
+  expect(() =>
+    gameboard1
+      .receiveAttack(3, 10)
+      .toThrow("Coordinate (-1, 0) is out of bounds")
   );
 });

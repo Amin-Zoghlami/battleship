@@ -1,1 +1,15 @@
+.gameboard {
+  display: grid;
+  grid-template-columns: repeat(10, 50px);
+  grid-template-rows: repeat(10, 50px);
+  gap: 5px;
+}
 
+.coordinate {
+  background-color: #0f5e9c;
+  border: 5px solid black;
+}
+
+.coordinate:hover {
+  background-color: #2389da;
+}
