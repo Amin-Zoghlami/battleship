@@ -15,15 +15,15 @@ export default class Player {
 
   attack(gameboard, x, y) {
     if (this.#isComputer) {
-      while (
-        gameboard.getMisses().has(`${x},${y}`) ||
-        gameboard.getHits().has(`${x},${y}`)
-      ) {
+      do {
         x = Math.floor(Math.random() * 10);
         y = Math.floor(Math.random() * 10);
-      }
+      } while (
+        gameboard.getMisses().has(`${x},${y}`) ||
+        gameboard.getHits().has(`${x},${y}`)
+      );
     }
 
-    return gameboard.receiveAttack(x, y);
+    return [gameboard.receiveAttack(x, y), `${x},${y}`];
   }
 }

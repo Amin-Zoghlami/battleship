@@ -29,6 +29,7 @@ export default class Display {
 
   #showGameboards() {
     const realGameboard = this.#realPlayer.getGameboard();
+    const computerGameboard = this.#computerPlayer.getGameboard();
 
     const realGrid = document.getElementById("real");
     const computerGrid = document.getElementById("computer");
@@ -40,14 +41,53 @@ export default class Display {
         realCoordinate.setAttribute("data-coordinate", `${x},${y}`);
         realGrid.appendChild(realCoordinate);
 
-        const computerCoordinate = document.createElement("div");
+        const computerCoordinate = document.createElement("button");
         computerCoordinate.classList.add("coordinate");
         computerCoordinate.setAttribute("data-coordinate", `${x},${y}`);
+        this.#addCoordinateInput(
+          computerCoordinate,
+          realGameboard,
+          computerGameboard,
+          realGrid
+        );
         computerGrid.appendChild(computerCoordinate);
       }
     }
 
     this.#renderShips(realGameboard, realGrid);
+  }
+
+  #addCoordinateInput(coordinate, realGameboard, computerGameboard, realGrid) {
+    coordinate.addEventListener("click", (event) => {
+      const computerCoordinate = event.currentTarget;
+      const computerXY = computerCoordinate.dataset.coordinate.split(",");
+      const x = computerXY[0];
+      const y = computerXY[1];
+
+      const isComputerHit = this.#realPlayer.attack(computerGameboard, x, y)[0];
+
+      if (isComputerHit) {
+        computerCoordinate.style.backgroundColor = "#880808";
+      } else {
+        computerCoordinate.style.backgroundColor = "#008000";
+      }
+
+      const [isRealHit, realXY] = this.#computerPlayer.attack(realGameboard);
+
+      const realCoordinate = realGrid.querySelector(
+        `[data-coordinate="${realXY}"]`
+      );
+
+      console.log(isRealHit);
+      console.log(realXY);
+      console.log(realCoordinate);
+
+      if (isRealHit) {
+        realCoordinate.style.backgroundColor = "#880808";
+      } else {
+        realCoordinate.style.backgroundColor = "#008000";
+      }
+    });
   }
 
   #renderShips(gameboard, grid) {
