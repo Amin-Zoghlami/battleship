@@ -1,4 +1,5 @@
 .gameboard {
+  margin: 30px;
   display: grid;
   grid-template-columns: repeat(10, 50px);
   grid-template-rows: repeat(10, 50px);
@@ -10,6 +11,6 @@
   border: 5px solid black;
 }
 
-.coordinate:hover {
+button.coordinate:hover {
   background-color: #2389da;
 }

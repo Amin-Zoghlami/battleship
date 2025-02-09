@@ -3,98 +3,159 @@ import Player from "./player.js";
 export default class Display {
   #realPlayer;
   #computerPlayer;
+  #realGameboard;
+  #computerGameboard;
+  #realGrid = document.getElementById("real");
+  #computerGrid = document.getElementById("computer");
+  #endDisplay = document.querySelector("dialog");
 
   constructor() {
+    this.#startNewGame();
+  }
+
+  #startNewGame() {
     this.#createPlayers();
-    this.#showGameboards();
+    this.#createRealGameboard();
+    this.#createSetup();
+    this.#addPlayAgainInput();
   }
 
   #createPlayers() {
     this.#realPlayer = new Player(false);
-    const realGameboard = this.#realPlayer.getGameboard();
-    realGameboard.placeShip(2, 0, 0, true);
-    realGameboard.placeShip(3, 1, 0, true);
-    realGameboard.placeShip(3, 2, 0, true);
-    realGameboard.placeShip(4, 3, 0, true);
-    realGameboard.placeShip(5, 4, 0, true);
+    this.#realPlayer.placeShipsRandom();
 
     this.#computerPlayer = new Player(true);
-    const computerGameboard = this.#computerPlayer.getGameboard();
-    computerGameboard.placeShip(2, 0, 0, false);
-    computerGameboard.placeShip(3, 0, 1, false);
-    computerGameboard.placeShip(3, 0, 2, false);
-    computerGameboard.placeShip(4, 0, 3, false);
-    computerGameboard.placeShip(5, 0, 4, false);
+    this.#computerPlayer.placeShipsRandom();
   }
 
-  #showGameboards() {
-    const realGameboard = this.#realPlayer.getGameboard();
-    const computerGameboard = this.#computerPlayer.getGameboard();
-
-    const realGrid = document.getElementById("real");
-    const computerGrid = document.getElementById("computer");
+  #createRealGameboard() {
+    this.#realGameboard = this.#realPlayer.getGameboard();
 
     for (let x = 0; x < 10; x++) {
       for (let y = 0; y < 10; y++) {
         const realCoordinate = document.createElement("div");
         realCoordinate.classList.add("coordinate");
         realCoordinate.setAttribute("data-coordinate", `${x},${y}`);
-        realGrid.appendChild(realCoordinate);
-
-        const computerCoordinate = document.createElement("button");
-        computerCoordinate.classList.add("coordinate");
-        computerCoordinate.setAttribute("data-coordinate", `${x},${y}`);
-        this.#addCoordinateInput(
-          computerCoordinate,
-          realGameboard,
-          computerGameboard,
-          realGrid
-        );
-        computerGrid.appendChild(computerCoordinate);
+        this.#realGrid.appendChild(realCoordinate);
       }
     }
 
-    this.#renderShips(realGameboard, realGrid);
+    this.#renderShips();
   }
 
-  #addCoordinateInput(coordinate, realGameboard, computerGameboard, realGrid) {
-    coordinate.addEventListener("click", (event) => {
-      const computerCoordinate = event.currentTarget;
-      const computerXY = computerCoordinate.dataset.coordinate.split(",");
-      const x = computerXY[0];
-      const y = computerXY[1];
+  #createComputerGameboard() {
+    this.#computerGameboard = this.#computerPlayer.getGameboard();
 
-      const isComputerHit = this.#realPlayer.attack(computerGameboard, x, y)[0];
-
-      if (isComputerHit) {
-        computerCoordinate.style.backgroundColor = "#880808";
-      } else {
-        computerCoordinate.style.backgroundColor = "#008000";
+    for (let x = 0; x < 10; x++) {
+      for (let y = 0; y < 10; y++) {
+        const computerCoordinate = document.createElement("button");
+        computerCoordinate.classList.add("coordinate");
+        computerCoordinate.setAttribute("data-coordinate", `${x},${y}`);
+        this.#addCoordinateInput(computerCoordinate);
+        this.#computerGrid.appendChild(computerCoordinate);
       }
+    }
+  }
 
-      const [isRealHit, realXY] = this.#computerPlayer.attack(realGameboard);
+  #addCoordinateInput(computerCoordinate) {
+    computerCoordinate.addEventListener(
+      "click",
+      () => {
+        const computerXY = computerCoordinate.dataset.coordinate.split(",");
+        const x = computerXY[0];
+        const y = computerXY[1];
 
-      const realCoordinate = realGrid.querySelector(
-        `[data-coordinate="${realXY}"]`
-      );
+        const isComputerHit = this.#realPlayer.attack(
+          this.#computerGameboard,
+          x,
+          y
+        )[0];
 
-      console.log(isRealHit);
-      console.log(realXY);
-      console.log(realCoordinate);
+        if (isComputerHit) {
+          computerCoordinate.style.backgroundColor = "#880808";
+        } else {
+          computerCoordinate.style.backgroundColor = "#008000";
+        }
 
-      if (isRealHit) {
-        realCoordinate.style.backgroundColor = "#880808";
-      } else {
-        realCoordinate.style.backgroundColor = "#008000";
-      }
+        if (this.#computerGameboard.isAllSunk()) {
+          const endText = this.#endDisplay.querySelector("p");
+          endText.textContent = "You win!";
+          this.#endDisplay.showModal();
+          return;
+        }
+
+        const [isRealHit, realXY] = this.#computerPlayer.attack(
+          this.#realGameboard
+        );
+
+        const realCoordinate = this.#realGrid.querySelector(
+          `[data-coordinate="${realXY}"]`
+        );
+
+        if (isRealHit) {
+          realCoordinate.style.backgroundColor = "#880808";
+        } else {
+          realCoordinate.style.backgroundColor = "#008000";
+        }
+
+        if (this.#realGameboard.isAllSunk()) {
+          const endText = this.#endDisplay.querySelector("p");
+          endText.textContent = "You lose!";
+          this.#endDisplay.showModal();
+        }
+      },
+      { once: true }
+    );
+  }
+
+  #createSetup() {
+    const body = document.body;
+
+    const randomizeButton = document.createElement("button");
+    randomizeButton.classList.add("setup");
+    randomizeButton.id = "random";
+    randomizeButton.textContent = "Randomize Ships";
+    body.insertBefore(randomizeButton, body.firstChild);
+
+    const startButton = document.createElement("button");
+    startButton.classList.add("setup");
+    startButton.id = "start";
+    startButton.textContent = "Start Game";
+    body.insertBefore(startButton, body.firstChild);
+
+    randomizeButton.addEventListener("click", () => {
+      this.#realPlayer.resetGameboard();
+      this.#realPlayer.placeShipsRandom();
+      this.#renderShips();
+    });
+
+    startButton.addEventListener("click", () => {
+      this.#createComputerGameboard();
+      randomizeButton.remove();
+      startButton.remove();
     });
   }
 
-  #renderShips(gameboard, grid) {
-    for (const ship of gameboard.getShips()) {
+  #addPlayAgainInput() {
+    const playAgainButton = this.#endDisplay.querySelector("button");
+    playAgainButton.addEventListener("click", () => {
+      this.#realGrid.innerHTML = "";
+      this.#computerGrid.innerHTML = "";
+      this.#endDisplay.close();
+      this.#startNewGame();
+    });
+  }
+
+  #renderShips() {
+    const allCoordinates = this.#realGrid.querySelectorAll(".coordinate");
+    for (const gridCoordinate of allCoordinates) {
+      gridCoordinate.style.backgroundColor = "#0f5e9c";
+    }
+
+    for (const ship of this.#realGameboard.getShips()) {
       const shipCoordinates = ship[1];
       for (const shipCoordinate of shipCoordinates) {
-        const gridCoordinate = grid.querySelector(
+        const gridCoordinate = this.#realGrid.querySelector(
           `[data-coordinate="${shipCoordinate}"`
         );
         gridCoordinate.style.backgroundColor = "#808080";

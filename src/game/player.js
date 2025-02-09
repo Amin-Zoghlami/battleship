@@ -13,6 +13,28 @@ export default class Player {
     return this.#gameboard;
   }
 
+  placeShipsRandom() {
+    for (let i = 2; i <= 5; i++) {
+      this.#placeShipRandom(i);
+      if (i == 3) this.#placeShipRandom(i);
+    }
+  }
+
+  #placeShipRandom(shipSize) {
+    for (;;) {
+      const x = Math.floor(Math.random() * 10);
+      const y = Math.floor(Math.random() * 10);
+      const isVertical = Math.random() < 0.5 ? true : false;
+
+      try {
+        this.#gameboard.placeShip(shipSize, x, y, isVertical);
+        break;
+      } catch {
+        continue;
+      }
+    }
+  }
+
   attack(gameboard, x, y) {
     if (this.#isComputer) {
       do {
@@ -25,5 +47,9 @@ export default class Player {
     }
 
     return [gameboard.receiveAttack(x, y), `${x},${y}`];
+  }
+
+  resetGameboard() {
+    this.#gameboard.clear();
   }
 }

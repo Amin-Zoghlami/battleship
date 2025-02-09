@@ -84,4 +84,10 @@ export default class Gameboard {
   getMisses() {
     return new Set(this.#misses);
   }
+
+  clear() {
+    this.#ships.length = 0;
+    this.#hits.clear();
+    this.#misses.clear();
+  }
 }
