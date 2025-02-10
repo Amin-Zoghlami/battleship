@@ -1,16 +1,107 @@
+body {
+  background-color: #677c3e;
+  font-family: "Exo", serif;
+}
+
+svg {
+  flex-shrink: 0;
+  height: 60px;
+  width: 60px;
+}
+
+.coordinate svg {
+  height: 50px;
+  width: 50px;
+}
+
+header {
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 10px;
+}
+
+h1 {
+  font-size: 50px;
+  margin: 0;
+}
+
+.main,
+div.setup {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 20px;
+}
+
+div.setup {
+  justify-content: center;
+  gap: 10px;
+}
+
+button.setup,
+dialog button {
+  font-family: "Exo", serif;
+  font-size: 20px;
+  font-weight: 600px;
+  padding: 10px;
+  border: 0;
+  border-radius: 5px;
+}
+
+button.setup:hover,
+dialog button:hover {
+  background-color: #d9d9d9;
+}
+
+button.setup:active,
+dialog button:active {
+  transform: scale(0.98);
+}
+
 .gameboard {
+  background-color: black;
+  border: 20px solid black;
+  border-radius: 20px;
   margin: 30px;
   display: grid;
   grid-template-columns: repeat(10, 50px);
   grid-template-rows: repeat(10, 50px);
-  gap: 5px;
+  gap: 1px;
 }
 
 .coordinate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #0f5e9c;
-  border: 5px solid black;
+  border: 0;
+  padding: 0;
 }
 
 button.coordinate:hover {
   background-color: #2389da;
+}
+
+button.coordinate:disabled:hover {
+  background-color: #0f5e9c;
+}
+
+dialog {
+  background-color: #394522;
+  padding: 50px;
+  border-radius: 5px;
+}
+
+dialog .container {
+  font-size: 125px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+dialog svg {
+  height: 100px;
+  width: 100px;
+  flex-shrink: 0;
 }
